@@ -10,15 +10,53 @@
     		color: #eef;
     		margin-top: 0px;
             background-position: center;
+            /*background-size: cover;*/
     	}
     	#provider {    		
     		font-size: 15px;
+            border-top: 1px solid #ddd;
+            margin-top: 8px;
+            padding:3px;
     	}
     	body {
     		margin: 0px;
     		margin-bottom:10px;
             text-align: center;
+            min-width: 250px;
     	}
+
+        button {
+            box-shadow: none;
+            border: none;
+            background: linear-gradient(145deg, rgb(23, 92, 113), rgb(41, 119, 54));
+            color: #e8e8e8;
+            padding: 10px;
+            display: block;
+            width: 100%;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        #reset {
+            background: #2b6b48;
+            color: #eee;
+            padding: 2px 5px;
+            font-size: 11px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            padding: 10px;
+        }
+
+        #allContainer {
+            max-height: 500px;
+            overflow-y: scroll;
+        }
+
     </style>
   </head>
   <body>
@@ -27,9 +65,14 @@
         Last login provider: <br>
     </div>
     <div id="provider"></div>
-    <!-- <a id="reset">Reset</a>
+    <a id="reset">Reset</a>
     <hr>
-    <button id="getAll">View All</button> -->
+    <button id="getAll">View All</button>
+    <div id="allContainer">
+        <table id="all">
+            
+        </table>
+    </div>
     <script src="popup.js"></script>    
   </body>
 </html>

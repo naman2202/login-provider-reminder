@@ -18,11 +18,11 @@ function getOne() {
 function reset() {
   chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {  
     var url = new URL(tabs[0].url);
-    var domain = getDomain(url.host);  
-    var provider = null;
-    localStorage[domain] = provider;
+    var domain = getDomain(url.host);      
+    localStorage.removeItem(domain);    
     document.getElementById("provider").innerHTML = "Not Set Yet";
   });
+  getAll();
 }
 
 function getDomain(host) {
@@ -44,19 +44,31 @@ function getAll() {
     var archive = [],
         keys = Object.keys(localStorage),
         i = 0, key;
-
-    for (; key = keys[i]; i++) {
-        // archive.push( key + '=' + localStorage.getItem(key));
-      document.body.innerHTML += key+" : "+localStorage.getItem(key)+"<br>";
+        document.getElementById("all").innerHTML = "<tr><th>Domain</th><th>Provider</th></tr>";
+    for (; key = keys[i]; i++) {        
+        document.getElementById("all").innerHTML += "<tr><td>"+key+"</td><td>"+localStorage.getItem(key)+"</td></tr>";
     }
 }
 
 getOne();
 
-document.getElementById("reset").click = function(){
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-112765846-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = 'https://ssl.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+
+document.getElementById("reset").onclick = function(){
   reset();
+  _gaq.push(['_trackEvent', 'Reset', 'clicked']);
 }
 
-document.getElementById("getAll").click = function(){
+document.getElementById("getAll").onclick = function(){
   getAll();
+  _gaq.push(['_trackEvent', 'Get All Data', 'clicked']);
 }
+

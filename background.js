@@ -1,51 +1,72 @@
 var nav = new NavigationCollector();
 var tempHost = "https://www.null.com";
-chrome.webNavigation.onBeforeNavigate.addListener(function(e) {    
-        if (e.url.match("oauth")) {          
-          var url = new URL(e.url);
-          var host = "Null";
-          var flag = -1;
-          var provider = "";
-          tempHost = "https://www.null.com";
-          
-          if (e.url.match('accounts.google.com/signin/oauth')) {
-            provider = "Google"
-            host = new URL(url.searchParams.get("destination"));
-            flag = 1;
-          }
+var fbRegex = new RegExp(/facebook\.com\/(v\d\d?.\d\d?\/)?dialog\/oauth/);
 
-          else
-          if ((e.url.match(/facebook\.com\/(v\d\d?.\d\d?\/)?dialog\/oauth/))||(e.url.match('facebook.com/login'))) {            
-            provider = "Facebook"
-            flag = 1;
-            key = url.searchParams.get("app_id");
-            if (key == null) {
-              key = url.searchParams.get("client_id");
-              if (key == null) {
-                key = url.searchParams.get("api_key"); 
-              }
-            }            
-            facebookHost(key);
-            host = new URL(tempHost);            
-          }
-          else {}
+chrome.webNavigation.onBeforeNavigate.addListener(function(e) {
+  var navUrl = null;
+  var tempUrl = e.url;
+  var cont = true;
+  tempHost = "";
+
+  chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {  
+    navUrl = tabs[0].url;    
+    if (navUrl.match("oauth")) {    
+      if (navUrl.match(fbRegex)||navUrl.match('facebook.com/login')) {
+        var url = new URL(navUrl);
+        cont = false;
+        getFbHost(getFbKey(url));
+        setProvider(new URL(tempHost), "Facebook");
+      }
+    }
+  });
+
+  if (cont&&tempUrl.match("oauth")) {
+    var url = new URL(tempUrl);
           
-          if (flag) {            
-            domain = getDomain(host.host);            
-            localStorage[domain] = provider;
-            // alert("Logging in to "+domain+" using "+provider);            
-          }
-        }
+    if (tempUrl.match('accounts.google.com/signin/oauth')) {
+      setProvider(new URL(url.searchParams.get("destination")), "Google");
+    }
+
+    else if(tempUrl.match(/google.com\/o\/oauth2\/auth/)) {
+      alert(tempUrl);
+      setProvider(new URL(url.searchParams.get("ss_domain")), "Google");
+    }
+
+    else if((tempUrl.match(fbRegex))||(tempUrl.match('facebook.com/login'))) {      
+      key = getFbKey(url);
+      getFbHost(key);
+      setProvider(new URL(tempHost), "Facebook");
+    }
+
+    else {}
+  }
 });
 
-function facebookHost(api_key) {
+function getFbKey(url) {
+  var key = url.searchParams.get("app_id");
+  if (key == null) {
+    key = url.searchParams.get("client_id");
+    if (key == null) {
+      key = url.searchParams.get("api_key");
+    }
+  }
+  return key;
+}
+
+function setProvider(domainURL, provider){
+  domain = getDomain(domainURL.host);
+  localStorage[domain] = provider;
+  alert("Logging in to "+domain+" using "+provider);
+}
+
+function getFbHost(api_key) {
   var xmlhttp = new XMLHttpRequest();
   var url = "https://graph.facebook.com/"+api_key;
 
   xmlhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       var myArr = JSON.parse(this.responseText);
-      if (myArr != null && myArr != undefined) {
+      if (myArr != null && myArr != undefined) {        
         tempHost = myArr.link;
       }          
     }
@@ -67,6 +88,5 @@ function getDomain(host) {
       domain = splitArr[arrLen - 3] + '.' + domain;
     }
   }
-
   return domain;
 }

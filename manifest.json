@@ -1,6 +1,6 @@
 {
   "name":           "__MSG_extName__",
-  "version":        "0.1",
+  "version":        "0.2",
   "description":    "__MSG_extDescription__",
   "default_locale": "en",
   "background": {
@@ -14,5 +14,6 @@
   "permissions":    [
     "webNavigation", "storage", "tabs"
   ],
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
   "manifest_version": 2
 }
