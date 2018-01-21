@@ -1,0 +1,10 @@
+{
+  "extName":  {
+    "message": "Login Provider Reminder [BETA]",
+    "description": "The extension name."
+  },
+  "extDescription": {
+    "message": "This extension remembers what login provider(Facebook or Google) you used to sign in to a website.",
+    "description": "The extension description."
+  }
+}
